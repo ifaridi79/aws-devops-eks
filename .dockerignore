@@ -4,6 +4,10 @@
 Makefile
 README.md
 
+node_modules
+npm-debug.log
+coverage
+
 # Local .terraform directories
 **/.terraform/*
 
