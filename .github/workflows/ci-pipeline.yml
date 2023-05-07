@@ -12,10 +12,10 @@ env:
     TAG: latest
     VERSION: v1.10.1
   
-  permissions:
+permissions:
     contents: read
   
-  jobs:
+jobs:
     build_code:
       name: 'Code Build'
       runs-on: ubuntu-latest
