@@ -1,18 +1,18 @@
 name: CD Pipeline
 
 on:
-    workflow_run:
-      workflows: [Infrastructure Pipeline]
-      branches: [main]
-      types: [completed]    
+    pull_request:
+        branches: [ "main" ]
 
 
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository }}
+    GH_IMAGE: aws-devops-eks
     TAG: latest
     VERSION: v1.10.1      
     NAMESPACE: production
+    REGION: us-east-2
 
 jobs:
   deploy:
@@ -27,7 +27,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2
+        aws-region: ${{ env.REGION }}
 
     # Login into Container GitHub Registry Package Manager  
     - name: Log in to the Container registry
@@ -51,11 +51,11 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         KUBECTL_VERSION: "v1.22.0"
       with:
-        args: set image deployment/${{ env.IMAGE_NAME }}-deployment ${{ env.IMAGE_NAME }}=${{ env.IMAGE_NAME }}:${{ env.TAG }}     
+        args: set image deployment/${{ env.GH_IMAGE }}-deployment ${{ env.GH_IMAGE }}=${{ env.GH_IMAGE }}:${{ env.TAG }}     
         
     - name: verify deployment
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: rollout status deployment/${{ env.IMAGE_NAME }}-deployment       
+        args: rollout status deployment/${{ env.GH_IMAGE }}-deployment       
