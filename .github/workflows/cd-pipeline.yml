@@ -13,6 +13,7 @@ env:
     VERSION: v1.10.1      
     NAMESPACE: production
     REGION: us-east-2
+    CLUSTER_NAME: aws-devops-eks-Qjrrifke
 
 jobs:
   deploy:
@@ -38,7 +39,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}    
 
-    # Kubectl 
+    # Kubectl version
     - name: Create Namespace       
       uses: tale/kubectl-action@v1
       with:
@@ -46,18 +47,13 @@ jobs:
         kubectl-version: v1.22.0       
     - run: kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -    
 
-    - name: deployment
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        GH_REGISTRY: ${{ steps.login-gh.outputs.registry }}
-        KUBECTL_VERSION: "v1.22.0"
-      with:
-        args: set image deployment/$GH_REPOSITORY $GH_REPOSITORY=$GH_REGISTRY/$GH_REPOSITORY:$TAG    
+    # Update the kube config file with our cluster information
+    - name: Update KubeConfig
+      shell: bash
+      run: |
+        aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region=${{ env.REGION }}   
         
-    - name: verify deployment
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: rollout status deployment/${{ env.GH_REPOSITORY }}       
+    # Deploy newly built changes to EKS cluster.
+    - name: Deploy To Cluster
+      shell: bash
+      run: kubectl apply -n ${{ env.NAMESPACE }} -f manifests/
