@@ -53,7 +53,7 @@ jobs:
         GH_REGISTRY: ${{ steps.login-gh.outputs.registry }}
         KUBECTL_VERSION: "v1.22.0"
       with:
-        args: set image deployment/${{ env.GH_REPOSITORY }} ${{ env.GH_REPOSITORY }}=${{ env.GH_REGISTRY }}/${{ env.GH_REPOSITORY}}:${{ env.TAG }}     
+        args: set image deployment/$GH_REPOSITORY $GH_REPOSITORY=$GH_REGISTRY/$GH_REPOSITORY:$TAG    
         
     - name: verify deployment
       uses: kodermax/kubectl-aws-eks@master
