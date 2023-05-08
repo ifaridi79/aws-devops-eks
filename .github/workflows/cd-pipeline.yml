@@ -8,7 +8,7 @@ on:
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository }}
-    GH_IMAGE: aws-devops-eks
+    GH_REPOSITORY: aws-devops-eks
     TAG: latest
     VERSION: v1.10.1      
     NAMESPACE: production
@@ -31,6 +31,7 @@ jobs:
 
     # Login into Container GitHub Registry Package Manager  
     - name: Log in to the Container registry
+      id: login-gh
       uses: docker/login-action@v2
       with:
         registry: ${{ env.REGISTRY }}
@@ -49,13 +50,14 @@ jobs:
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        GH_REGISTRY: ${{ steps.login-gh.outputs.registry }}
         KUBECTL_VERSION: "v1.22.0"
       with:
-        args: set image deployment/${{ env.GH_IMAGE }} ${{ env.GH_IMAGE }}=${{ env.GH_IMAGE }}:${{ env.TAG }}     
+        args: set image deployment/${{ env.GH_REPOSITORY }} ${{ env.GH_REPOSITORY }}=${{ env.GH_REGISTRY }}/${{ env.GH_REPOSITORY}}:${{ env.TAG }}     
         
     - name: verify deployment
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: rollout status deployment/${{ env.GH_IMAGE }}       
+        args: rollout status deployment/${{ env.GH_REPOSITORY }}       
