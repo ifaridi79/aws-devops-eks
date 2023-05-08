@@ -49,16 +49,13 @@ jobs:
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        GH_REGISTRY: ${{ env.REGISTRY }}
-        GH_REPOSITORY: ${{ env.IMAGE_NAME }}
-        IMAGE_TAG: ${{ env.TAG }}
         KUBECTL_VERSION: "v1.22.0"
       with:
-        args: set image deployment/$GH_REPOSITORY $GH_REPOSITORY=$GH_REGISTRY/$GH_REPOSITORY:$GH_REPOSITORY     
+        args: set image deployment/${{ env.IMAGE_NAME }}-deployment ${{ env.IMAGE_NAME }}=${{ env.IMAGE_NAME }}:${{ env.TAG }}     
         
     - name: verify deployment
       uses: kodermax/kubectl-aws-eks@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: rollout status deployment/${{ env.IMAGE_NAME }}       
+        args: rollout status deployment/${{ env.IMAGE_NAME }}-deployment       
