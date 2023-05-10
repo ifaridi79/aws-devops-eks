@@ -4,10 +4,10 @@
 terraform {
 
   cloud {
-    organization = "cloudverse" 
+    organization = "cloudverse"
 
     workspaces {
-      name = "aws-devops-eks"
+      name = "aws-devops-eks-fullstacklab"
     }
   }
 
@@ -35,4 +35,3 @@ terraform {
 
   required_version = "~> 1.3"
 }
-

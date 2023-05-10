@@ -1,18 +1,19 @@
 name: CD Pipeline
 
 on:
-    workflow_run:
-      workflows: [Infrastructure Pipeline]
-      branches: [main]
-      types: [completed]    
+    pull_request:
+        branches: [ "main" ]
 
 
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository }}
+    GH_REPOSITORY: aws-devops-eks
     TAG: latest
     VERSION: v1.10.1      
     NAMESPACE: production
+    REGION: us-east-2
+    CLUSTER_NAME: aws-devops-eks-fullstacklab
 
 jobs:
   deploy:
@@ -27,17 +28,18 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2
+        aws-region: ${{ env.REGION }}
 
     # Login into Container GitHub Registry Package Manager  
     - name: Log in to the Container registry
+      id: login-gh
       uses: docker/login-action@v2
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}    
 
-    # Kubectl 
+    # Kubectl version
     - name: Create Namespace       
       uses: tale/kubectl-action@v1
       with:
@@ -45,17 +47,13 @@ jobs:
         kubectl-version: v1.22.0       
     - run: kubectl create namespace ${{ env.NAMESPACE }} --dry-run -o json | kubectl apply -f -    
 
-    - name: deployment
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: "v1.22.0"
-      with:
-        args: set image deployment/${{ env.IMAGE_NAME }}-deployment ${{ env.IMAGE_NAME }}=${{ env.IMAGE_NAME }}:${{ env.TAG }}     
+    # Update the kube config file with our cluster information
+    - name: Update KubeConfig
+      shell: bash
+      run: |
+        aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region=${{ env.REGION }}   
         
-    - name: verify deployment
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: rollout status deployment/${{ env.IMAGE_NAME }}-deployment       
+    # Deploy newly built changes to EKS cluster.
+    - name: Deploy To Cluster
+      shell: bash
+      run: kubectl apply -n ${{ env.NAMESPACE }} -f manifests/

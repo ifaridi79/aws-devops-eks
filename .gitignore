@@ -16,6 +16,8 @@ typings/
 # Optional npm cache directory
 .npm
 
+.DS_Store
+
 # Optional eslint cache
 .eslintcache
 # Local .terraform directories
