@@ -22,6 +22,12 @@ spec:
       containers:
       - name: aws-devops-eks
         image: ghcr.io/ifaridi79/aws-devops-eks:latest
+        env:
+        - name:  MY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: environment
+              key: MY_SECRET       
         ports:
         - containerPort: 3000
         resources:
