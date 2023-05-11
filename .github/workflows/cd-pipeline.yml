@@ -1,8 +1,10 @@
 name: CD Pipeline
 
 on:
-    pull_request:
-        branches: [ "main" ]
+  workflow_run:
+    workflows: [Infrastructure Pipeline]
+    branches: [main]
+    types: [completed]   
 
 
 env:
@@ -56,4 +58,4 @@ jobs:
     # Deploy newly built changes to EKS cluster.
     - name: Deploy To Cluster
       shell: bash
-      run: kubectl apply -n ${{ env.NAMESPACE }} -f manifests/
+      run: kubectl apply -n ${{ env.NAMESPACE }} -f codebase/manifests/

@@ -1,0 +1,13 @@
+.git
+.vscode
+.gitignore
+
+# Local Byte-compiled
+.vscode
+node_modules/
+coverage/
+build/
+
+Makefile
+README.md
+npm-debug.log

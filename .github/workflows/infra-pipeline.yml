@@ -29,27 +29,27 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       id: tf-init
-      run: terraform -chdir="./infrastructure/" init -input=false      
+      run: terraform -chdir="./codebase/infrastructure/" init -input=false      
 
     # Validate terraform files
     - name: Terraform Validate
       id: tf-validate
-      run: terraform -chdir="./infrastructure/" validate -no-color    
+      run: terraform -chdir="./codebase/infrastructure/" validate -no-color    
     
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       id: tf-format
-      run: terraform -chdir="./infrastructure/" fmt -check -recursive
+      run: terraform -chdir="./codebase/infrastructure/" fmt -check -recursive
       continue-on-error: true
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: tf-plan
-      run: terraform -chdir="./infrastructure/" plan -input=false
+      run: terraform -chdir="./codebase/infrastructure/" plan -input=false
     
     # Apply the execution to create resources
     - name: Terraform Apply
       id: tf-apply     
-      run: terraform -chdir="./infrastructure/" apply -auto-approve -input=false
+      run: terraform -chdir="./codebase/infrastructure/" apply -auto-approve -input=false
     
     

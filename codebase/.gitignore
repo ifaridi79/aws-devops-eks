@@ -2,8 +2,8 @@
 .vscode
 node_modules/
 jspm_packages/
-/coverage
-
+coverage/
+build/
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
