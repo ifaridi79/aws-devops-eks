@@ -17,6 +17,7 @@ env:
     REGION: us-east-2
     CLUSTER_NAME: aws-devops-eks-fullstacklab
 
+
 jobs:
   deploy:
     name: deploy to EKS
@@ -54,6 +55,11 @@ jobs:
       shell: bash
       run: |
         aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region=${{ env.REGION }}   
+
+    # Create Secrets
+    - name: Creating Secrets
+      shell: bash
+      run: kubectl create secret generic environment --from-literal=MY_SECRET=${{ secrets.MY_SECRET }} -n ${{ env.NAMESPACE }}     
         
     # Deploy newly built changes to EKS cluster.
     - name: Deploy To Cluster
