@@ -74,7 +74,7 @@ jobs:
   
       # Building the Docker image and tag    
       - name: Build and tag image
-        run: ocker build -f codebase/Dockerfile -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}" .
+        run: docker build -f codebase/Dockerfile -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}" -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}" .
   
       # Push to GitHub Registry  
       - name: Push to GitHub Registry
